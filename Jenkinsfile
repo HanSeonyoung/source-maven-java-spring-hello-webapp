@@ -9,7 +9,7 @@ pipeline {
     stage('Checkout') {
       steps {
         git branch: 'main', 
-        url: '<URL>'
+        url: 'https://github.com/HanSeonyoung/source-maven-java-spring-hello-webapp.git'
       }
     }
     stage('Build') {
