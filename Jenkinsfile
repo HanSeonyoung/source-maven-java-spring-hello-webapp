@@ -1,5 +1,5 @@
 pipeline {
-  agent any				# agent { label 'jenkins-node' }
+  agent any				
 
   triggers {
     pollSCM('* * * * *')
@@ -14,7 +14,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'mvn clean package'   	# <MAVEN_BUILD_COMMAND> mvn clean package
+        sh 'mvn clean package'   	 clean package
       }
     }
     stage('Deploy') {
