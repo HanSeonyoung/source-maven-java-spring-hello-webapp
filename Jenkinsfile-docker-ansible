@@ -1,0 +1,44 @@
+pipeline {
+  agent none
+
+  stages {
+    stage('Checkout and Build and Test') {
+      agent {
+        docker { image 'maven:3-openjdk-17' }
+      }
+      steps {
+        git branch: 'main', url: 'https://github.com/HanSeonyoung/source-maven-java-spring-hello-webapp.git'
+        sh 'mvn clean package -DskipTests=true'
+        sh 'mvn test'
+      }
+    }
+    stage('Build Docker Image') {
+      agent { label 'controller' }
+      steps {
+        sh 'docker image build -t new .'
+      }
+    }
+    stage('Tag Docker Image') {
+      agent { label 'controller' }
+      steps {
+        sh 'docker image tag new hsy2001/cccr-cicd:$BUILD_NUMBER' // Tagging with build number
+        sh 'docker image tag new hsy2001/cccr-cicd:latest' // Tagging with latest
+      }
+    }
+    stage('Publish Docker Image') {
+      agent { label 'controller' }
+      steps {
+        withDockerRegistry(credentialsId: 'docker-registry-credential', url: 'https://index.docker.io/v1/') {
+          sh 'docker image push hsy2001/cccr-cicd:$BUILD_NUMBER' // Tagging with build number
+          sh 'docker image push hsy2001/cccr-cicd:latest' // Tagging with latest
+        }
+      }
+    }
+    stage('Run Docker Container') {
+      agent { label 'controller' }
+      steps {
+        ansiblePlaybook(playbook: 'docker-container-deploy.yaml')
+      }
+    }
+  }
+}
