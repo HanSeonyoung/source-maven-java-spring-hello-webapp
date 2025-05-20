@@ -38,23 +38,11 @@ spec:
     }
   }
   stages {
-    stage('Checkout') {
+    stage('Checkout and Build and Test') {
       steps {
         container('maven') {
-          git branch: 'main', url: 'https://github.com/HanSeonyoung/jenkins-kubernetes.git'
-        }
-      }
-    }
-    stage('Build') {
-      steps {
-        container('maven') {
+          git branch: 'main', url: 'https://github.com/HanSeonyoung/source-maven-java-spring-hello-webapp.git'
           sh 'mvn clean package -DskipTests=true'
-        }
-      }
-    }
-    stage('Test') {
-      steps {
-        container('maven') {
           sh 'mvn test'
         }
       }
